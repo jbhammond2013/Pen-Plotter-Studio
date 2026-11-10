@@ -27,8 +27,8 @@ label{display:flex;align-items:center;gap:6px}
 input,textarea{font:inherit;color:#000;background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 1px 1px #000;border-radius:0;padding:3px 4px}
 input[type=number]{width:72px}
 textarea{flex:1;min-width:180px}
-.stage{background:#808080;border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 1px 1px #000;padding:6px;margin-top:6px;display:flex;justify-content:center}
-canvas{display:block;width:auto;height:auto;max-width:100%;max-height:max(300px,calc(100vh - 290px));touch-action:none;cursor:crosshair}
+.stage{background:#808080;border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 1px 1px #000;padding:6px;margin-top:6px;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1}
+canvas{display:block;width:auto;height:auto;max-width:100%;max-height:100%;touch-action:none;cursor:crosshair}
 .stat{margin-top:6px}.stat:empty{display:none}
 .dbox{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 1px 1px #000;padding:6px}
 .diag{display:block;width:100%;max-width:380px;height:auto;margin:0 auto;color:#000}
@@ -236,7 +236,11 @@ function diagram(){
  const s=readSettings(),zr=(dz==='up'?s.up:s.dn)||0,z=Math.min(30,Math.max(0,zr)),ty=174-2*z,by=ty-16,top=by-64,
   po=isFinite(s.po)?Math.min(Math.max(s.po,0),100):40,px=Math.max(85+po*2.4,135),pb=ty-18,mid=(85+px)/2,
   L=side==='left',tx=x=>L?360-x:x,an=L?'end':'start';
- $('dg').innerHTML=`<defs><marker id='ah' viewBox='0 0 8 8' refX='4' refY='4' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0L8 4L0 8z' fill='currentColor' stroke='none'/></marker></defs>
+ let gm='',gM='';const gx0=L?275:85;
+ for(let x=gx0%24;x<=360;x+=24){if(Math.round((x-gx0)/24)%5===0)gM+='M'+x+' 0V210';else gm+='M'+x+' 0V210';}
+ for(let y=10;y<=210;y+=24){if(Math.round((178-y)/24)%5===0)gM+='M0 '+y+'H360';else gm+='M0 '+y+'H360';}
+ const gp=`<path d='${gm}' stroke='#e0e0da' fill='none'/><path d='${gM}' stroke='#bdbdb4' stroke-width='1.5' fill='none'/>`;
+ $('dg').innerHTML=`<defs><marker id='ah' viewBox='0 0 8 8' refX='4' refY='4' markerWidth='7' markerHeight='7' orient='auto-start-reverse'><path d='M0 0L8 4L0 8z' fill='currentColor' stroke='none'/></marker></defs>${gp}
 <line x1='0' y1='178' x2='360' y2='178' stroke='currentColor' stroke-opacity='.35' stroke-width='2'/>
 <g${L?" transform='translate(360 0) scale(-1 1)'":''}>
 <g stroke='currentColor' stroke-width='2' stroke-linejoin='round' style='fill:var(--panel)'>
