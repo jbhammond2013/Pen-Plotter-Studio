@@ -1,74 +1,70 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pen Plotter Studio</title>
 <style>
-:root{--bg:#f4f4f2;--panel:#fff;--ink:#1a1a1a;--mut:#666;--line:#d4d4d0;--acc:#2a6df4;--accink:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#161616;--panel:#222;--ink:#eee;--mut:#9a9a9a;--line:#3a3a3a;--acc:#5b92ff;--accink:#0b0b0b;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#161616;--panel:#222;--ink:#eee;--mut:#9a9a9a;--line:#3a3a3a;--acc:#5b92ff;--accink:#0b0b0b;color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+:root{--face:#c0c0c0;--ink:#000;--panel:#fff;color-scheme:light}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:900px;margin:0 auto;padding:14px}
-.head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-h1{font-size:20px;margin:0}
-.bar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;align-items:center}
-button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
-button.on,button.go{background:var(--acc);color:var(--accink);border-color:var(--acc)}
-button.go{font-weight:600}
-.sep{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
-.ic{width:16px;height:16px;fill:currentColor;vertical-align:-3px;margin-right:5px}
+body{margin:0;padding:10px;background:#808080;color:#000;font:12px/1.3 Tahoma,"MS Sans Serif",Arial,sans-serif}
+.win{max-width:1240px;margin:0 auto;background:var(--face);padding:3px;border:2px solid;border-color:#dfdfdf #000 #000 #dfdfdf;box-shadow:inset 1px 1px #fff,inset -1px -1px #808080}
+.title{background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-weight:bold;font-size:13px;padding:3px 6px;margin-bottom:6px}
+.body{padding:2px 4px 6px}
+fieldset{margin:0 0 8px;padding:6px 8px 8px;border:2px groove #fff;min-width:0}
+legend{padding:0 4px;font-weight:bold}
+.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,1fr);gap:8px;align-items:start}
+.layout fieldset{margin:0}
+@media (max-width:800px){.layout{grid-template-columns:1fr}.layout fieldset{margin-bottom:8px}}
+.bar{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}
+.bar+.bar{margin-top:6px}
+button{font:inherit;color:#000;background:var(--face);border:2px solid;border-color:#fff #000 #000 #fff;box-shadow:inset -1px -1px #808080,inset 1px 1px #dfdfdf;border-radius:0;padding:3px 9px;cursor:pointer}
+button:active,button.on{border-color:#000 #fff #fff #000;box-shadow:inset 1px 1px #808080,inset -1px -1px #dfdfdf}
+button.on{background:conic-gradient(#fff 25%,#c0c0c0 0 50%,#fff 0 75%,#c0c0c0 0) 0 0/2px 2px}
+button.go{font-weight:bold}
+.sep{width:2px;align-self:stretch;border-left:1px solid #808080;border-right:1px solid #fff;margin:0 3px}
+.ic{width:14px;height:14px;fill:currentColor;vertical-align:-2px;margin-right:4px}
 [hidden]{display:none!important}
-.stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;justify-content:center}
-canvas{max-width:100%;height:auto;touch-action:none;cursor:crosshair;border-radius:4px}
-.stat{color:var(--mut);margin:8px 2px;font-size:13px}
-.stat:empty{display:none}
-label{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--mut)}
-input,textarea{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px}
-input[type=number]{width:70px}
+label{display:flex;align-items:center;gap:6px}
+input,textarea{font:inherit;color:#000;background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 1px 1px #000;border-radius:0;padding:3px 4px}
+input[type=number]{width:72px}
 textarea{flex:1;min-width:180px}
-.sec{font-size:13px;font-weight:600;color:var(--mut);margin:4px 2px 6px}
-.settings{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;width:100%}
-.fields{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
-.diag{width:300px;max-width:100%;height:auto;color:var(--ink)}
-.warn{background:#fff3cd;color:#664d03;border:1px solid #e6c765;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:14px}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warn{background:#3a2f10;color:#f0d98a;border-color:#6b5a1f}}
-:root[data-theme="dark"] .warn{background:#3a2f10;color:#f0d98a;border-color:#6b5a1f}
+.stage{background:#808080;border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 1px 1px #000;padding:6px;margin-top:6px;display:flex;justify-content:center}
+canvas{display:block;width:auto;height:auto;max-width:100%;max-height:max(300px,calc(100vh - 290px));touch-action:none;cursor:crosshair}
+.stat{margin-top:6px}.stat:empty{display:none}
+.dbox{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 1px 1px #000;padding:6px}
+.diag{display:block;width:100%;max-width:380px;height:auto;margin:0 auto;color:#000}
+.sbox{margin-top:8px;border:2px groove #fff;padding:8px}
+.sbox .bar{gap:8px 12px}
+.warn{background:#ffffe1;color:#000;border:1px solid #000;padding:5px 8px;margin:0 4px 8px}
 </style></head>
-<body><div class="wrap">
-<div class="head"><h1>Pen Plotter Studio</h1></div>
+<body><div class="win">
+<div class="title">untitled - Pen Plotter Studio</div>
+<div class="body">
 <div class="warn" id="warn" hidden></div>
-<div class="sec">Drawing Stuff</div>
-<div class="bar">
-<button data-t="pen" class="on"><svg class="ic" viewBox="0 0 512 512"><path d="M429.548 30.836c-.307-.003-.6.005-.875.024-2.212.147-3.34.653-4.576 1.89l-27.58 27.58 55.156 55.154 27.578-27.58c1.238-1.236 1.744-2.363 1.89-4.575.15-2.21-.37-5.433-1.805-9.163-2.87-7.46-9.277-16.667-17.055-24.445-7.778-7.778-16.985-14.185-24.445-17.055-3.264-1.255-6.138-1.81-8.287-1.83zm-45.758 42.22-9.9 9.9 9.9 9.9 12.727 12.727 9.9 9.9 12.727 12.728 9.9 9.9 9.9-9.9-55.155-55.155zm-22.627 22.626L72.665 384.186l9.898 9.897 288.5-288.5-9.9-9.9zm22.627 22.63L95.29 406.808l9.9 9.902 288.5-288.5-9.9-9.9zm22.63 22.626-288.502 288.5 9.897 9.9 288.503-288.5-9.9-9.9zM63.223 400.198l-12.12 30.306 30.393 30.394 30.305-12.12-6.61-6.612L92.46 429.44l-9.9-9.9-12.73-12.728-6.61-6.612zm-19.395 48.488-12.993 32.478 32.478-12.992-19.486-19.485z"/></svg>Pen</button>
+<fieldset><legend>File Stuff</legend>
+<div class="bar"><label>File name <input id="fn" value="drawing"></label>
+<button id="svgbtn">Insert SVG</button><input type="file" id="svgfile" accept=".svg,image/svg+xml" hidden>
+<button id="exp" class="go">Export G-code</button></div>
+</fieldset>
+<div class="layout">
+<fieldset><legend>Drawing Stuff</legend>
+<div class="bar"><button data-t="pen" class="on"><svg class="ic" viewBox="0 0 512 512"><path d="M429.548 30.836c-.307-.003-.6.005-.875.024-2.212.147-3.34.653-4.576 1.89l-27.58 27.58 55.156 55.154 27.578-27.58c1.238-1.236 1.744-2.363 1.89-4.575.15-2.21-.37-5.433-1.805-9.163-2.87-7.46-9.277-16.667-17.055-24.445-7.778-7.778-16.985-14.185-24.445-17.055-3.264-1.255-6.138-1.81-8.287-1.83zm-45.758 42.22-9.9 9.9 9.9 9.9 12.727 12.727 9.9 9.9 12.727 12.728 9.9 9.9 9.9-9.9-55.155-55.155zm-22.627 22.626L72.665 384.186l9.898 9.897 288.5-288.5-9.9-9.9zm22.627 22.63L95.29 406.808l9.9 9.902 288.5-288.5-9.9-9.9zm22.63 22.626-288.502 288.5 9.897 9.9 288.503-288.5-9.9-9.9zM63.223 400.198l-12.12 30.306 30.393 30.394 30.305-12.12-6.61-6.612L92.46 429.44l-9.9-9.9-12.73-12.728-6.61-6.612zm-19.395 48.488-12.993 32.478 32.478-12.992-19.486-19.485z"/></svg>Pen</button>
 <button data-t="eraser"><svg class="ic" viewBox="0 0 512 512"><path d="M256 16C123.45 16 16 123.45 16 256s107.45 240 240 240 240-107.45 240-240S388.55 16 256 16zm0 60c99.41 0 180 80.59 180 180s-80.59 180-180 180S76 355.41 76 256 156.59 76 256 76zm-80.625 60c-.97-.005-2.006.112-3.063.313v-.032c-18.297 3.436-45.264 34.743-33.375 46.626l73.157 73.125-73.156 73.126c-14.63 14.625 29.275 58.534 43.906 43.906L256 299.906l73.156 73.156c14.63 14.628 58.537-29.28 43.906-43.906l-73.156-73.125 73.156-73.124c14.63-14.625-29.275-58.5-43.906-43.875L256 212.157l-73.156-73.125c-2.06-2.046-4.56-3.015-7.47-3.03z"/></svg>Eraser</button>
 <button data-t="select">⬚ Select</button><button data-t="rect">▭ Square</button><button data-t="ellipse">◯ Circle</button><button data-t="curve">⌒ Curve</button><button data-t="text"><b>T</b> Text</button>
 <span class="sep"></span>
-<button id="undo">↶</button><button id="redo">↷</button><button id="clear">Clear</button>
-</div>
-<div class="sec">File Stuff</div>
-<div class="bar">
-<label>File name <input id="fn" value="drawing">.gcode</label>
-<button id="svgbtn">Insert SVG</button><input type="file" id="svgfile" accept=".svg,image/svg+xml" hidden>
-<button id="exp" class="go">Export G-code</button>
-</div>
+<button id="undo">↶</button><button id="redo">↷</button><button id="clear">Clear</button></div>
 <div class="bar" id="textbar" hidden><textarea id="txt" rows="2">Hello</textarea><label>Height (mm) <input id="th" type="number" value="10" min="2"></label></div>
 <div class="stage"><canvas id="cv"></canvas></div>
 <div class="stat" id="stat"></div>
-<div class="sec">Settings Stuff</div>
-<div class="bar">
-<label>Bed X (mm) <input id="bw" type="number" value="220" min="20" max="500"></label>
-<label>Bed Y (mm) <input id="bh" type="number" value="220" min="20" max="500"></label>
-<label>Speed <input id="fd" type="number" value="1500" step="100" style="width:80px"></label>
+</fieldset>
+<fieldset><legend>Settings Stuff</legend>
+<div class="dbox"><svg id="dg" class="diag" viewBox="0 0 360 210"></svg></div>
+<div class="sbox">
+<div class="bar"><label>Bed X (mm) <input id="bw" type="number" value="220" min="20" max="500"></label> <label>Bed Y (mm) <input id="bh" type="number" value="220" min="20" max="500"></label> <label>Speed <input id="fd" type="number" value="1500" step="100" style="width:80px"></label></div>
+<div class="bar"><button id="side">Switch Pen Sides</button> <label>Pen offset (mm) <input id="po" type="number" value="40" min="0" step="1"></label> <label>Pen up Z <input id="zu" type="number" value="5" step="0.5"></label> <label>Pen down Z <input id="zd" type="number" value="0" step="0.1"></label></div>
 </div>
-<div class="bar">
-<div class="settings"><div class="fields"><button id="side">Switch Pen Sides</button>
-<label>Pen offset (mm) <input id="po" type="number" value="40" min="0" step="1"></label>
-<label>Pen up Z <input id="zu" type="number" value="5" step="0.5"></label>
-<label>Pen down Z <input id="zd" type="number" value="0" step="0.1"></label></div>
-<svg id="dg" class="diag" viewBox="0 0 360 210"></svg></div>
+</fieldset>
 </div>
-</div>
+</div></div>
 <script>
 const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
 const S=4;let W=220,H=220,PX=40,side='right';const unreach=q=>q[0]>W+.01||q[1]>H+.01||(side==='right'?q[0]<PX-.01:q[0]>W-PX+.01); // bed size in mm; PX = how far right of the nozzle the pen sits
@@ -80,7 +76,7 @@ function line(p){ctx.beginPath();p.forEach(([x,y],i)=>i?ctx.lineTo(x*S,y*S):ctx.
 function bbox(a){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;a.forEach(s=>s.forEach(([x,y])=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}));return a.length?[x0,y0,x1,y1]:null;}
 function draw(){
  sel=sel.filter(s=>strokes.includes(s));
- ctx.fillStyle='#fbfbf9';ctx.fillRect(0,0,cv.width,cv.height);
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,cv.width,cv.height);
  ctx.fillStyle='rgba(214,69,69,.13)';ctx.fillRect(side==='right'?0:(W-PX)*S,0,PX*S,cv.height);
  for(let m=0;m<=Math.max(W,H);m+=10){ctx.strokeStyle=m%50?'#e0e0da':'#bdbdb4';ctx.lineWidth=m%50?1:1.5;ctx.beginPath();if(m<=W){ctx.moveTo(m*S,0);ctx.lineTo(m*S,cv.height);}if(m<=H){ctx.moveTo(0,(H-m)*S);ctx.lineTo(cv.width,(H-m)*S);}ctx.stroke();}
  ctx.fillStyle='#a33';ctx.font='bold 13px system-ui,sans-serif';ctx.textAlign='center';
@@ -88,9 +84,9 @@ function draw(){
  ctx.fillStyle='#888';ctx.font='12px system-ui,sans-serif';ctx.fillText('BACK',cv.width/2,14);ctx.fillText('FRONT',cv.width/2,cv.height-6);
  ctx.strokeStyle='#777';ctx.lineWidth=2;ctx.strokeRect(1,1,cv.width-2,cv.height-2);
  ctx.lineWidth=2;ctx.lineCap=ctx.lineJoin='round';
- for(const p of cur?strokes.concat([cur]):strokes){ctx.strokeStyle=sel.includes(p)?'#2a6df4':'#000';line(p);}
+ for(const p of cur?strokes.concat([cur]):strokes){ctx.strokeStyle=sel.includes(p)?'#0000ff':'#000';line(p);}
  if(ghost){ctx.strokeStyle='#888';ghost.forEach(line);}
- const bb=bbox(sel);if(bb){ctx.setLineDash([6,4]);ctx.strokeStyle='#2a6df4';ctx.lineWidth=1;ctx.strokeRect(bb[0]*S-4,bb[1]*S-4,(bb[2]-bb[0])*S+8,(bb[3]-bb[1])*S+8);ctx.setLineDash([]);}
+ const bb=bbox(sel);if(bb){ctx.setLineDash([6,4]);ctx.strokeStyle='#0000ff';ctx.lineWidth=1;ctx.strokeRect(bb[0]*S-4,bb[1]*S-4,(bb[2]-bb[0])*S+8,(bb[3]-bb[1])*S+8);ctx.setLineDash([]);}
  updateWarn();$('stat').textContent=cs?'Click to bend the curve':'';
 }
 function pos(e){const r=cv.getBoundingClientRect();return[Math.min(W,Math.max(0,(e.clientX-r.left)/r.width*W)),Math.min(H,Math.max(0,(e.clientY-r.top)/r.height*H))];}
